@@ -1,5 +1,5 @@
 export const fallbackLng = "pt-BR";
-export const languages = [fallbackLng, "en"];
+export const languages = [fallbackLng, "en"] as const;
 export const defaultNS = "translation";
 export const cookieName = "elementum:language";
 
