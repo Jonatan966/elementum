@@ -12,9 +12,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { languages } from "@/app/i18n/settings";
 
-export function LanguageToggle() {
+interface LanguageToggleProps {
+  currentLanguage?: string;
+}
+
+export function LanguageToggle(props: LanguageToggleProps) {
   const serverHeaders = headers();
-  const language = serverHeaders.get("next-url")?.replace("/", "");
+  const headerLanguage = serverHeaders.get("next-url")?.replace("/", "");
+
+  const language = props?.currentLanguage || headerLanguage;
 
   return (
     <DropdownMenu>
