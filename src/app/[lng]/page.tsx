@@ -23,7 +23,7 @@ export default async function Home(props: { params: { lng: string } }) {
         <LanguageToggle currentLanguage={props.params.lng} />
       </header>
 
-      <ElementsZone />
+      <ElementsZone language={props.params.lng} />
     </>
   );
 }

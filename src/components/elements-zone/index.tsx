@@ -1,6 +1,19 @@
 "use client";
 
-import { DragEvent, useRef } from "react";
+import { appService } from "@/services/app";
+import { useRef, useState } from "react";
+
+interface ElementsZoneParams {
+  language: string;
+}
+
+interface ElementInDisplay {
+  name: string;
+  emoji: string;
+  id: string;
+  x: number;
+  y: number;
+}
 
 const basicElements = [
   {
@@ -21,36 +34,63 @@ const basicElements = [
   },
 ];
 
-export function ElementsZone() {
+export function ElementsZone({ language }: ElementsZoneParams) {
+  const [elementsInDisplay, setElementsInDisplay] = useState<
+    ElementInDisplay[]
+  >([]);
+
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
-  function newElement(baseElementId: string, x: number, y: number) {
-    let targetElement = document.getElementById(baseElementId)!;
+  function onAddElementInDisplay(
+    element: Pick<ElementInDisplay, "name" | "emoji">,
+    x: number,
+    y: number
+  ) {
+    const elementPayload = {
+      name: element.name,
+      emoji: element.emoji,
+      x,
+      y,
+      id: crypto.randomUUID(),
+    };
 
-    if (targetElement.id.includes("dock-")) {
-      targetElement = targetElement.cloneNode(true) as HTMLDivElement;
+    setElementsInDisplay((old) => [...old, elementPayload]);
+  }
 
-      targetElement.id = crypto.randomUUID();
+  function onMoveElementInDisplay(elementId: string, x: number, y: number) {
+    setElementsInDisplay((old) =>
+      old.map((element) =>
+        element.id === elementId ? { ...element, x, y } : element
+      )
+    );
+  }
 
-      targetElement.addEventListener("dragstart", (e) => {
-        e.dataTransfer!.setData("text/plain", targetElement.id);
-      });
+  async function onCombineElements(
+    elementA: ElementInDisplay,
+    elementB: ElementInDisplay,
+    x: number,
+    y: number
+  ) {
+    const newElement = await appService.makeCombination({
+      elementA: elementA.name,
+      elementB: elementB.name,
+      language,
+    });
 
-      targetElement.addEventListener("dragover", (e) => e.preventDefault());
+    setElementsInDisplay((old) =>
+      old.filter(
+        (element) => ![elementA?.id, elementB?.id].includes(element.id)
+      )
+    );
 
-      targetElement.addEventListener("drop", (e) => {
-        console.log({
-          first: e.dataTransfer?.getData("text/plain"),
-          second: targetElement.id,
-        });
-      });
-    }
-
-    targetElement.style.position = "absolute";
-    targetElement.style.left = `${x - targetElement.clientWidth / 2}px`;
-    targetElement.style.top = `${y - targetElement.clientHeight / 2}px`;
-
-    dropZoneRef.current?.appendChild(targetElement);
+    onAddElementInDisplay(
+      {
+        emoji: newElement.emoji,
+        name: newElement.element,
+      },
+      x,
+      y
+    );
   }
 
   return (
@@ -62,22 +102,69 @@ export function ElementsZone() {
         onDrop={(e) => {
           e.preventDefault();
 
-          const id = e.dataTransfer.getData("text/plain");
+          const eventInfo = JSON.parse(e.dataTransfer.getData("text/plain"));
 
-          newElement(id, e.clientX, e.clientY);
+          switch (eventInfo.type) {
+            case "add":
+              onAddElementInDisplay(eventInfo, e.clientX, e.clientY);
+              break;
+
+            case "move":
+              onMoveElementInDisplay(eventInfo.id, e.clientX, e.clientY);
+              break;
+          }
         }}
-      />
+      >
+        {elementsInDisplay.map((element) => (
+          <div
+            key={element.id}
+            id={element.id}
+            className="bg-secondary inline-block py-2 px-3 m-1 cursor-pointer"
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData(
+                "text/plain",
+                JSON.stringify({
+                  ...element,
+                  type: "move",
+                })
+              );
+            }}
+            onDrop={(e) => {
+              e.stopPropagation();
+
+              const elementA = JSON.parse(
+                e.dataTransfer?.getData("text/plain")!
+              );
+
+              onCombineElements(elementA, element, e.clientX, e.clientY);
+            }}
+            onDragOver={(e) => e.preventDefault()}
+            style={{
+              left: `${element.x}px`,
+              top: `${element.y}px`,
+              position: "absolute",
+            }}
+          >
+            {element.emoji} {element.name}
+          </div>
+        ))}
+      </main>
 
       <footer className="absolute bottom-0 left-0 right-0 container max-h-32 overflow-y-auto text-center">
         {basicElements.map((element) => (
           <div
             key={element.name}
             className="bg-secondary inline-block py-2 px-3 m-1 cursor-pointer"
-            data-element={element.name}
             draggable
-            id={`dock-${element.name}`}
             onDragStart={(e) => {
-              e.dataTransfer.setData("text/plain", e.currentTarget.id);
+              e.dataTransfer.setData(
+                "text/plain",
+                JSON.stringify({
+                  ...element,
+                  type: "add",
+                })
+              );
             }}
           >
             {element.emoji} {element.name}
