@@ -23,7 +23,7 @@ export function ElementsZone({
   >([]);
   const [elementsInDeck, setElementsInDeck] = useLocalStorage(
     initialElements,
-    DECK_STORAGE_KEY
+    `${DECK_STORAGE_KEY}-${language}`
   );
 
   const dropZoneRef = useRef<HTMLDivElement>(null);
