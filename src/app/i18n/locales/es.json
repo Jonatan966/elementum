@@ -1,30 +1,30 @@
 {
-  "darkTheme": "Escuro",
+  "darkTheme": "Oscuro",
   "lightTheme": "Claro",
   "systemTheme": "Sistema",
-  "titleTheme": "Trocar o tema",
+  "titleTheme": "Cambiar el tema",
   "initialElements": [
     {
-      "name": "Água",
+      "name": "Agua",
       "emoji": "🚿"
     },
     {
-      "name": "Fogo",
+      "name": "Fuego",
       "emoji": "🔥"
     },
     {
-      "name": "Vento",
+      "name": "Viento",
       "emoji": "🌬️"
     },
     {
-      "name": "Terra",
+      "name": "Tierra",
       "emoji": "🌍"
     }
   ],
   "clearDeckDialog": {
-    "title": "Você tem certeza?",
-    "description": "A ação de resetar é irreversível.",
+    "title": "¿Estás seguro?",
+    "description": "La acción de reinicio es irreversible.",
     "cancelButton": "Cancelar",
-    "submitButton": "Resetar"
+    "submitButton": "Reiniciar"
   }
 }
