@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { languages } from "@/app/i18n/settings";
+import { Locale } from "@/app/i18n/settings";
 import { openAI } from "@/lib/openai";
 import { db } from "@/database";
 import { combinations } from "@/database/schema";
@@ -10,7 +10,7 @@ interface Combination {
   emoji: string;
   element: {
     name: string;
-    language: (typeof languages)[number];
+    language: Locale;
   }[];
 }
 
