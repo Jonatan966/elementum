@@ -2,17 +2,10 @@
 
 import { appService } from "@/services/app";
 import { DragEvent, useRef, useState } from "react";
+import { Element, ElementInDisplay } from "./element";
 
 interface ElementsZoneParams {
   language: string;
-}
-
-interface ElementInDisplay {
-  name: string;
-  emoji: string;
-  id: string;
-  x: number;
-  y: number;
 }
 
 export function ElementsZone({ language }: ElementsZoneParams) {
@@ -70,17 +63,26 @@ export function ElementsZone({ language }: ElementsZoneParams) {
     x: number,
     y: number
   ) {
+    const temporaryElementId = crypto.randomUUID();
+
+    setElementsInDisplay((old) => [
+      ...old.filter(
+        (element) => ![elementA?.id, elementB?.id].includes(element.id)
+      ),
+      {
+        id: temporaryElementId,
+        name: `${elementA.emoji} + ${elementB.emoji}`,
+        x,
+        y,
+        isCombining: true,
+      },
+    ]);
+
     const newElement = await appService.makeCombination({
       elementA: elementA.name,
       elementB: elementB.name,
       language,
     });
-
-    setElementsInDisplay((old) =>
-      old.filter(
-        (element) => ![elementA?.id, elementB?.id].includes(element.id)
-      )
-    );
 
     setElementsInDeck((old) =>
       old.some((element) => element.name === newElement.element)
@@ -92,6 +94,10 @@ export function ElementsZone({ language }: ElementsZoneParams) {
               name: newElement.element,
             },
           ]
+    );
+
+    setElementsInDisplay((old) =>
+      old.filter((element) => element.id !== temporaryElementId)
     );
 
     onAddElementInDisplay(
@@ -154,22 +160,12 @@ export function ElementsZone({ language }: ElementsZoneParams) {
         onDrop={handleDropElementInDisplay}
       >
         {elementsInDisplay.map((element) => (
-          <div
+          <Element
+            element={element}
             key={element.id}
-            id={element.id}
-            className="bg-secondary inline-block py-2 px-3 m-1 cursor-pointer"
-            draggable
             onDragStart={(e) => handleElementDragStart(e, element, "move")}
             onDrop={(e) => handleDropElementInElement(e, element)}
-            onDragOver={(e) => e.preventDefault()}
-            style={{
-              left: `${element.x}px`,
-              top: `${element.y}px`,
-              position: "absolute",
-            }}
-          >
-            {element.emoji} {element.name}
-          </div>
+          />
         ))}
       </main>
 
