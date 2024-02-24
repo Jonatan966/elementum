@@ -20,5 +20,11 @@
       "name": "Terra",
       "emoji": "🌍"
     }
-  ]
+  ],
+  "clearDeckDialog": {
+    "title": "Você tem certeza?",
+    "description": "A ação de resetar é irreversível.",
+    "cancelButton": "Cancelar",
+    "submitButton": "Resetar"
+  }
 }

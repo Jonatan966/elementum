@@ -7,7 +7,7 @@ import { Locale } from "../i18n/settings";
 import { ClearDeckButton } from "@/components/clear-deck-button";
 
 export default async function Home(props: { params: { lng: Locale } }) {
-  const { darkTheme, lightTheme, systemTheme, titleTheme } =
+  const { darkTheme, lightTheme, systemTheme, titleTheme, clearDeckDialog } =
     await getDictionary(props.params.lng);
 
   return (
@@ -27,7 +27,7 @@ export default async function Home(props: { params: { lng: Locale } }) {
           }}
         />
 
-        <ClearDeckButton />
+        <ClearDeckButton i18n={clearDeckDialog} />
       </header>
 
       <ElementsZone />
