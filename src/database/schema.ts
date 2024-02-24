@@ -1,4 +1,4 @@
-import { languages } from "@/app/i18n/settings";
+import { i18n } from "@/app/i18n/settings";
 import { sql } from "drizzle-orm";
 import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
@@ -10,6 +10,6 @@ export const combinations = pgTable("combinations", {
   elementB: varchar("element_b").notNull(),
   result: varchar("result").notNull(),
   emoji: varchar("emoji").notNull(),
-  language: varchar("language", { enum: languages }).notNull(),
+  language: varchar("language", { enum: i18n.locales }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
