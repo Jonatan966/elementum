@@ -6,7 +6,7 @@ import { getDictionary } from "../i18n";
 import { Locale } from "../i18n/settings";
 
 export default async function Home(props: { params: { lng: Locale } }) {
-  const { darkTheme, lightTheme, systemTheme, titleTheme, initialElements } =
+  const { darkTheme, lightTheme, systemTheme, titleTheme } =
     await getDictionary(props.params.lng);
 
   return (
@@ -27,10 +27,7 @@ export default async function Home(props: { params: { lng: Locale } }) {
         <LanguageToggle currentLanguage={props.params.lng} />
       </header>
 
-      <ElementsZone
-        language={props.params.lng}
-        initialElements={initialElements}
-      />
+      <ElementsZone />
     </>
   );
 }

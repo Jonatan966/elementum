@@ -1,109 +1,21 @@
 "use client";
 
-import { appService } from "@/services/app";
-import { DragEvent, useRef, useState } from "react";
+import { DragEvent, useRef } from "react";
 import { Element, ElementInDisplay } from "./element";
-import { useLocalStorage } from "@/hooks/use-localstorage";
+import { useElements } from "@/contexts/elements-context";
 
 type ElementInDeck = Pick<ElementInDisplay, "name" | "emoji">;
 
-interface ElementsZoneParams {
-  language: string;
-  initialElements: ElementInDeck[];
-}
-
-const DECK_STORAGE_KEY = "@elementum:deck";
-
-export function ElementsZone({
-  language,
-  initialElements,
-}: ElementsZoneParams) {
-  const [elementsInDisplay, setElementsInDisplay] = useState<
-    ElementInDisplay[]
-  >([]);
-  const [elementsInDeck, setElementsInDeck] = useLocalStorage(
-    initialElements,
-    `${DECK_STORAGE_KEY}-${language}`
-  );
+export function ElementsZone() {
+  const {
+    elementsInDeck,
+    elementsInDisplay,
+    onAddElementInDisplay,
+    onCombineElements,
+    onMoveElementInDisplay,
+  } = useElements();
 
   const dropZoneRef = useRef<HTMLDivElement>(null);
-
-  function onAddElementInDisplay(element: ElementInDeck, x: number, y: number) {
-    const elementPayload = {
-      name: element.name,
-      emoji: element.emoji,
-      x,
-      y,
-      id: crypto.randomUUID(),
-    };
-
-    setElementsInDisplay((old) => [...old, elementPayload]);
-  }
-
-  function onMoveElementInDisplay(elementId: string, x: number, y: number) {
-    setElementsInDisplay((old) =>
-      old.map((element) =>
-        element.id === elementId ? { ...element, x, y } : element
-      )
-    );
-  }
-
-  async function onCombineElements(
-    elementA: ElementInDisplay,
-    elementB: ElementInDisplay,
-    x: number,
-    y: number
-  ) {
-    if (elementA.id === elementB.id) {
-      return;
-    }
-
-    const temporaryElementId = crypto.randomUUID();
-
-    setElementsInDisplay((old) => [
-      ...old.filter(
-        (element) => ![elementA?.id, elementB?.id].includes(element.id)
-      ),
-      {
-        id: temporaryElementId,
-        name: `${elementA.emoji} + ${elementB.emoji}`,
-        x,
-        y,
-        isCombining: true,
-      },
-    ]);
-
-    const newElement = await appService.makeCombination({
-      elementA: elementA.name,
-      elementB: elementB.name,
-      language,
-    });
-
-    setElementsInDeck((old) =>
-      old.some((element) => element.name === newElement.element)
-        ? old
-        : [
-            ...old,
-            {
-              emoji: newElement.emoji,
-              name: newElement.element,
-            },
-          ]
-    );
-
-    setElementsInDisplay((old) =>
-      old.filter((element) => element.id !== temporaryElementId)
-    );
-
-    onAddElementInDisplay(
-      {
-        emoji: newElement.emoji,
-        name: newElement.element,
-      },
-      x,
-      y
-    );
-  }
 
   function handleElementDragStart(
     event: DragEvent,
