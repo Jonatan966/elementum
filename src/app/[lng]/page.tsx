@@ -2,6 +2,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useTranslation } from "../i18n";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ElementsZone } from "@/components/elements-zone";
+import Image from "next/image";
 
 export default async function Home(props: { params: { lng: string } }) {
   const { t } = await useTranslation(props.params.lng);
@@ -9,6 +10,7 @@ export default async function Home(props: { params: { lng: string } }) {
   return (
     <>
       <header className="absolute top-0 left-0 right-0 container flex items-center gap-2 p-3">
+        <Image src="/assets/app-icon.png" alt="" width={24} height={24} />
         <h1 className="font-bold text-xl mr-auto">Elementum</h1>
 
         <ThemeToggle
