@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ElementsZone } from "@/components/elements-zone";
-import Image from "next/image";
 import { getDictionary } from "../i18n";
 import { Locale } from "../i18n/settings";
 
@@ -12,12 +12,7 @@ export default async function Home(props: { params: { lng: Locale } }) {
   return (
     <>
       <header className="absolute top-0 left-0 right-0 container flex items-center gap-2 p-3">
-        <Image
-          src="/assets/app-icon.png"
-          alt="Elementum"
-          width={24}
-          height={24}
-        />
+        <img src="/assets/app-icon.png" alt="Elementum" className="h-6 w-6" />
         <h1 className="font-bold text-xl mr-auto">Elementum</h1>
 
         <ThemeToggle
