@@ -6,17 +6,18 @@ import { getDictionary } from "../i18n";
 import { Locale } from "../i18n/settings";
 
 export default async function Home(props: { params: { lng: Locale } }) {
-  const {
-    "dark-theme": darkTheme,
-    "light-theme": lightTheme,
-    "system-theme": systemTheme,
-    "title-theme": titleTheme,
-  } = await getDictionary(props.params.lng);
+  const { darkTheme, lightTheme, systemTheme, titleTheme, initialElements } =
+    await getDictionary(props.params.lng);
 
   return (
     <>
       <header className="absolute top-0 left-0 right-0 container flex items-center gap-2 p-3">
-        <Image src="/assets/app-icon.png" alt="" width={24} height={24} />
+        <Image
+          src="/assets/app-icon.png"
+          alt="Elementum"
+          width={24}
+          height={24}
+        />
         <h1 className="font-bold text-xl mr-auto">Elementum</h1>
 
         <ThemeToggle
@@ -31,7 +32,10 @@ export default async function Home(props: { params: { lng: Locale } }) {
         <LanguageToggle currentLanguage={props.params.lng} />
       </header>
 
-      <ElementsZone language={props.params.lng} />
+      <ElementsZone
+        language={props.params.lng}
+        initialElements={initialElements}
+      />
     </>
   );
 }

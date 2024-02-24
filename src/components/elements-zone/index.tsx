@@ -6,30 +6,17 @@ import { Element, ElementInDisplay } from "./element";
 
 interface ElementsZoneParams {
   language: string;
+  initialElements: Pick<ElementInDisplay, "name" | "emoji">[];
 }
 
-export function ElementsZone({ language }: ElementsZoneParams) {
+export function ElementsZone({
+  language,
+  initialElements,
+}: ElementsZoneParams) {
   const [elementsInDisplay, setElementsInDisplay] = useState<
     ElementInDisplay[]
   >([]);
-  const [elementsInDeck, setElementsInDeck] = useState([
-    {
-      name: "Agua",
-      emoji: "🚿",
-    },
-    {
-      name: "Fogo",
-      emoji: "🔥",
-    },
-    {
-      name: "Vento",
-      emoji: "🌬️",
-    },
-    {
-      name: "Terra",
-      emoji: "🌍",
-    },
-  ]);
+  const [elementsInDeck, setElementsInDeck] = useState(initialElements);
 
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
