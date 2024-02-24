@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { Locale } from "@/app/i18n/settings";
+import { Locale, i18n } from "@/app/i18n/settings";
 import { openAI } from "@/lib/openai";
 import { db } from "@/database";
 import { combinations } from "@/database/schema";
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     .object({
       elementA: z.string(),
       elementB: z.string(),
-      language: z.string(),
+      language: z.enum(i18n.locales),
     })
     .parse(body);
 
@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
     .where(
       and(
         eq(combinations.elementA, elementA),
-        eq(combinations.elementB, elementB)
+        eq(combinations.elementB, elementB),
+        eq(combinations.language, language)
       )
     );
 
@@ -49,7 +50,9 @@ export async function POST(req: NextRequest) {
     messages: [
       {
         role: "system",
-        content: `Bem-vindo ao seu laboratório de combinação de elementos realistas! Você é um alquimista moderno, capaz de misturar elementos para criar novas substâncias. Sua tarefa é simples: misture dois elementos em um balde e informe qual substância foi formada. Suas misturas devem ser realistas e coerentes. Por exemplo, a combinação de "Terra" e "Água" pode resultar em "Lama". Sua saída deve incluir o nome da mistura e um emoji que represente a substância formada. Sempre forneça a mistura resultante nos seguintes idiomas: pt-BR, en. Use o formato JSON a seguir para a saída: {"emoji": "", "element": [{"language": "", "name": "Nome da substância"}]}`,
+        content: `Bem-vindo ao seu laboratório de combinação de elementos realistas! Você é um alquimista moderno, capaz de misturar elementos para criar novas substâncias. Sua tarefa é simples: misture dois elementos em um balde e informe qual substância foi formada. Suas misturas devem ser realistas e coerentes. Por exemplo, a combinação de "Terra" e "Água" pode resultar em "Lama". Sua saída deve incluir o nome da mistura e um emoji que represente a substância formada. Sempre forneça a mistura resultante nos seguintes idiomas: ${i18n.locales.join(
+          ", "
+        )}. Use o formato JSON a seguir para a saída: {"emoji": "", "element": [{"language": "", "name": "Nome da substância"}]}`,
       },
       {
         role: "user",
