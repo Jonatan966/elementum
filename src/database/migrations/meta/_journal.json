@@ -8,6 +8,13 @@
       "when": 1707934530841,
       "tag": "0000_odd_ultragirl",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1708807913204,
+      "tag": "0001_exotic_exiles",
+      "breakpoints": true
     }
   ]
 }
