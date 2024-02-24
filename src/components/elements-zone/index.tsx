@@ -3,11 +3,16 @@
 import { appService } from "@/services/app";
 import { DragEvent, useRef, useState } from "react";
 import { Element, ElementInDisplay } from "./element";
+import { useLocalStorage } from "@/hooks/use-localstorage";
+
+type ElementInDeck = Pick<ElementInDisplay, "name" | "emoji">;
 
 interface ElementsZoneParams {
   language: string;
-  initialElements: Pick<ElementInDisplay, "name" | "emoji">[];
+  initialElements: ElementInDeck[];
 }
+
+const DECK_STORAGE_KEY = "@elementum:deck";
 
 export function ElementsZone({
   language,
@@ -16,15 +21,14 @@ export function ElementsZone({
   const [elementsInDisplay, setElementsInDisplay] = useState<
     ElementInDisplay[]
   >([]);
-  const [elementsInDeck, setElementsInDeck] = useState(initialElements);
+  const [elementsInDeck, setElementsInDeck] = useLocalStorage(
+    initialElements,
+    DECK_STORAGE_KEY
+  );
 
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
-  function onAddElementInDisplay(
-    element: Pick<ElementInDisplay, "name" | "emoji">,
-    x: number,
-    y: number
-  ) {
+  function onAddElementInDisplay(element: ElementInDeck, x: number, y: number) {
     const elementPayload = {
       name: element.name,
       emoji: element.emoji,
@@ -103,7 +107,7 @@ export function ElementsZone({
 
   function handleElementDragStart(
     event: DragEvent,
-    element: ElementInDisplay | Pick<ElementInDisplay, "name" | "emoji">,
+    element: ElementInDisplay | ElementInDeck,
     eventType: string
   ) {
     event.dataTransfer.setData(
