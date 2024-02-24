@@ -50,6 +50,10 @@ export function ElementsZone({
     x: number,
     y: number
   ) {
+    if (elementA.id === elementB.id) {
+      return;
+    }
+
     const temporaryElementId = crypto.randomUUID();
 
     setElementsInDisplay((old) => [
