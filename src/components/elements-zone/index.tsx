@@ -1,7 +1,7 @@
 "use client";
 
 import { appService } from "@/services/app";
-import { useRef, useState } from "react";
+import { DragEvent, useRef, useState } from "react";
 
 interface ElementsZoneParams {
   language: string;
@@ -93,27 +93,54 @@ export function ElementsZone({ language }: ElementsZoneParams) {
     );
   }
 
+  function handleElementDragStart(
+    event: DragEvent,
+    element: ElementInDisplay | Pick<ElementInDisplay, "name" | "emoji">,
+    eventType: string
+  ) {
+    event.dataTransfer.setData(
+      "text/plain",
+      JSON.stringify({
+        ...element,
+        type: eventType,
+      })
+    );
+  }
+
+  function handleDropElementInDisplay(event: DragEvent) {
+    event.preventDefault();
+
+    const eventInfo = JSON.parse(event.dataTransfer.getData("text/plain"));
+
+    switch (eventInfo.type) {
+      case "add":
+        onAddElementInDisplay(eventInfo, event.clientX, event.clientY);
+        break;
+
+      case "move":
+        onMoveElementInDisplay(eventInfo.id, event.clientX, event.clientY);
+        break;
+    }
+  }
+
+  function handleDropElementInElement(
+    event: DragEvent,
+    element: ElementInDisplay
+  ) {
+    event.stopPropagation();
+
+    const elementA = JSON.parse(event.dataTransfer?.getData("text/plain")!);
+
+    onCombineElements(elementA, element, event.clientX, event.clientY);
+  }
+
   return (
     <>
       <main
         className="h-full pt-16 pb-32"
         ref={dropZoneRef}
         onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-
-          const eventInfo = JSON.parse(e.dataTransfer.getData("text/plain"));
-
-          switch (eventInfo.type) {
-            case "add":
-              onAddElementInDisplay(eventInfo, e.clientX, e.clientY);
-              break;
-
-            case "move":
-              onMoveElementInDisplay(eventInfo.id, e.clientX, e.clientY);
-              break;
-          }
-        }}
+        onDrop={handleDropElementInDisplay}
       >
         {elementsInDisplay.map((element) => (
           <div
@@ -121,24 +148,8 @@ export function ElementsZone({ language }: ElementsZoneParams) {
             id={element.id}
             className="bg-secondary inline-block py-2 px-3 m-1 cursor-pointer"
             draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData(
-                "text/plain",
-                JSON.stringify({
-                  ...element,
-                  type: "move",
-                })
-              );
-            }}
-            onDrop={(e) => {
-              e.stopPropagation();
-
-              const elementA = JSON.parse(
-                e.dataTransfer?.getData("text/plain")!
-              );
-
-              onCombineElements(elementA, element, e.clientX, e.clientY);
-            }}
+            onDragStart={(e) => handleElementDragStart(e, element, "move")}
+            onDrop={(e) => handleDropElementInElement(e, element)}
             onDragOver={(e) => e.preventDefault()}
             style={{
               left: `${element.x}px`,
@@ -157,15 +168,7 @@ export function ElementsZone({ language }: ElementsZoneParams) {
             key={element.name}
             className="bg-secondary inline-block py-2 px-3 m-1 cursor-pointer"
             draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData(
-                "text/plain",
-                JSON.stringify({
-                  ...element,
-                  type: "add",
-                })
-              );
-            }}
+            onDragStart={(e) => handleElementDragStart(e, element, "add")}
           >
             {element.emoji} {element.name}
           </div>
