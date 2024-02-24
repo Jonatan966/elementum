@@ -15,29 +15,28 @@ interface ElementInDisplay {
   y: number;
 }
 
-const basicElements = [
-  {
-    name: "Agua",
-    emoji: "🚿",
-  },
-  {
-    name: "Fogo",
-    emoji: "🔥",
-  },
-  {
-    name: "Vento",
-    emoji: "🌬️",
-  },
-  {
-    name: "Terra",
-    emoji: "🌍",
-  },
-];
-
 export function ElementsZone({ language }: ElementsZoneParams) {
   const [elementsInDisplay, setElementsInDisplay] = useState<
     ElementInDisplay[]
   >([]);
+  const [elementsInDeck, setElementsInDeck] = useState([
+    {
+      name: "Agua",
+      emoji: "🚿",
+    },
+    {
+      name: "Fogo",
+      emoji: "🔥",
+    },
+    {
+      name: "Vento",
+      emoji: "🌬️",
+    },
+    {
+      name: "Terra",
+      emoji: "🌍",
+    },
+  ]);
 
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +80,18 @@ export function ElementsZone({ language }: ElementsZoneParams) {
       old.filter(
         (element) => ![elementA?.id, elementB?.id].includes(element.id)
       )
+    );
+
+    setElementsInDeck((old) =>
+      old.some((element) => element.name === newElement.element)
+        ? old
+        : [
+            ...old,
+            {
+              emoji: newElement.emoji,
+              name: newElement.element,
+            },
+          ]
     );
 
     onAddElementInDisplay(
@@ -163,7 +174,7 @@ export function ElementsZone({ language }: ElementsZoneParams) {
       </main>
 
       <footer className="absolute bottom-0 left-0 right-0 container max-h-32 overflow-y-auto text-center">
-        {basicElements.map((element) => (
+        {elementsInDeck.map((element) => (
           <div
             key={element.name}
             className="bg-secondary inline-block py-2 px-3 m-1 cursor-pointer"
