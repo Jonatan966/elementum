@@ -4,6 +4,7 @@ import { LanguageToggle } from "@/components/language-toggle";
 import { ElementsZone } from "@/components/elements-zone";
 import { getDictionary } from "../i18n";
 import { Locale } from "../i18n/settings";
+import { ClearDeckButton } from "@/components/clear-deck-button";
 
 export default async function Home(props: { params: { lng: Locale } }) {
   const { darkTheme, lightTheme, systemTheme, titleTheme } =
@@ -15,6 +16,8 @@ export default async function Home(props: { params: { lng: Locale } }) {
         <img src="/assets/app-icon.png" alt="Elementum" className="h-6 w-6" />
         <h1 className="font-bold text-xl mr-auto">Elementum</h1>
 
+        <LanguageToggle currentLanguage={props.params.lng} />
+
         <ThemeToggle
           i18n={{
             dark: darkTheme,
@@ -24,7 +27,7 @@ export default async function Home(props: { params: { lng: Locale } }) {
           }}
         />
 
-        <LanguageToggle currentLanguage={props.params.lng} />
+        <ClearDeckButton />
       </header>
 
       <ElementsZone />
