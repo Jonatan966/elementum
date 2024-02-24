@@ -6,14 +6,20 @@ export function useLocalStorage<T>(initialState: T, storageKey: string) {
   const [state, setState] = useState(initialState);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedState = JSON.parse(
-        window.localStorage.getItem(storageKey) || "[]"
-      ) as T;
+    if (typeof window === "undefined") {
+      return;
+    }
 
-      if ((Array.isArray(savedState) && savedState?.length) || !!savedState) {
-        setState(savedState);
-      }
+    const rawSavedState = localStorage.getItem(storageKey);
+
+    if (!rawSavedState) {
+      return;
+    }
+
+    const savedState = JSON.parse(rawSavedState) as T;
+
+    if ((Array.isArray(savedState) && savedState?.length) || !!savedState) {
+      setState(savedState);
     }
   }, [storageKey]);
 
