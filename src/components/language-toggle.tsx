@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { languages } from "@/app/i18n/settings";
+import { i18n } from "@/app/i18n/settings";
 
 interface LanguageToggleProps {
   currentLanguage?: string;
@@ -31,7 +31,7 @@ export function LanguageToggle(props: LanguageToggleProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {languages.map((lng) => (
+        {i18n.locales.map((lng) => (
           <Link href={`/${lng}`} key={lng}>
             <DropdownMenuItem>{lng}</DropdownMenuItem>
           </Link>

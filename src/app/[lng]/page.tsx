@@ -1,11 +1,17 @@
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useTranslation } from "../i18n";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ElementsZone } from "@/components/elements-zone";
 import Image from "next/image";
+import { getDictionary } from "../i18n";
+import { Locale } from "../i18n/settings";
 
-export default async function Home(props: { params: { lng: string } }) {
-  const { t } = await useTranslation(props.params.lng);
+export default async function Home(props: { params: { lng: Locale } }) {
+  const {
+    "dark-theme": darkTheme,
+    "light-theme": lightTheme,
+    "system-theme": systemTheme,
+    "title-theme": titleTheme,
+  } = await getDictionary(props.params.lng);
 
   return (
     <>
@@ -15,10 +21,10 @@ export default async function Home(props: { params: { lng: string } }) {
 
         <ThemeToggle
           i18n={{
-            dark: t("dark-theme"),
-            light: t("light-theme"),
-            system: t("system-theme"),
-            title: t("title-theme"),
+            dark: darkTheme,
+            light: lightTheme,
+            system: systemTheme,
+            title: titleTheme,
           }}
         />
 

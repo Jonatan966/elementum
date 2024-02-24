@@ -1,34 +1,13 @@
-import { createInstance } from "i18next";
-import resourcesToBackend from "i18next-resources-to-backend";
-import { initReactI18next } from "react-i18next/initReactI18next";
-import { getOptions } from "./settings";
+import "server-only";
+import type { Locale } from "./settings";
 
-const initI18next = async (lng: string, ns?: string) => {
-  const i18nInstance = createInstance();
-  await i18nInstance
-    .use(initReactI18next)
-    .use(
-      resourcesToBackend(
-        (language: string, namespace: string) =>
-          import(`./locales/${language}/${namespace}.json`)
-      )
-    )
-    .init(getOptions(lng, ns));
-  return i18nInstance;
+// We enumerate all dictionaries here for better linting and typescript support
+// We also get the default import for cleaner types
+const dictionaries = {
+  en: () => import("./locales/en.json").then((module) => module.default),
+  "pt-BR": () =>
+    import("./locales/pt-BR.json").then((module) => module.default),
 };
 
-export async function useTranslation(
-  lng: string,
-  ns?: string,
-  options: { keyPrefix?: string } = {}
-) {
-  const i18nextInstance = await initI18next(lng, ns);
-  return {
-    t: i18nextInstance.getFixedT(
-      lng,
-      Array.isArray(ns) ? ns[0] : ns,
-      options.keyPrefix
-    ),
-    i18n: i18nextInstance,
-  };
-}
+export const getDictionary = async (locale: Locale) =>
+  dictionaries[locale]?.() ?? dictionaries.en();

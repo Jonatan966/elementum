@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { dir } from "i18next";
 import { Inter } from "next/font/google";
 
-import { languages } from "../i18n/settings";
+import { i18n } from "../i18n/settings";
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export async function generateStaticParams() {
-  return languages.map((lng) => ({ lng }));
+  return i18n.locales.map((lng) => ({ lng }));
 }
 
 export default function RootLayout({
@@ -27,7 +26,7 @@ export default function RootLayout({
   };
 }>) {
   return (
-    <html lang={params.lng} dir={dir(params.lng)}>
+    <html lang={params.lng}>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
